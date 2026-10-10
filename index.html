@@ -3,20 +3,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <meta http-equiv="Cache-Control" content="no-cache">
-<noscript><meta http-equiv="refresh" content="0;url=https://grain-blair-furnishings-doubt.trycloudflare.com"></noscript>
 <title>Лингвариум</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#23403a;color:#eaf0ea;font:16px system-ui,sans-serif;text-align:center}
 main{max-width:520px;padding:24px}h1{font:italic 40px Georgia,serif;margin:0 0 12px}a{color:#f2cf55}p{margin:8px 0}.s{color:#a7bbb2;font-size:13px}</style>
 </head><body><main><h1>Лингвариум</h1>
-<p id="st">Переходим в игру… / Opening the game… / Ouverture du jeu…</p><p id="ln"><a href="https://grain-blair-furnishings-doubt.trycloudflare.com">https://grain-blair-furnishings-doubt.trycloudflare.com</a></p>
-<p class="s">Обновлено: 10.10.2026 05:04</p></main>
+<p id="st">Сервис «Лингвариум» в данный момент недоступен. Попробуйте зайти позже.<br><span class="s">Lingvarium is unavailable right now. / Lingvarium est indisponible pour le moment.</span></p>
+<p class="s">Обновлено: 10.10.2026 02:12</p></main>
 <script>
-var URL0="https://grain-blair-furnishings-doubt.trycloudflare.com";
-function go(u){if(u)location.replace(u);}
+var URL0="";
+var OFF="Сервис «Лингвариум» в данный момент недоступен. Попробуйте зайти позже.<br><span class=s>Lingvarium is unavailable right now. / Lingvarium est indisponible pour le moment.</span>";
+function el(id){return document.getElementById(id);}
+function offline(){var ln=el("ln");if(ln)ln.hidden=true;el("st").innerHTML=OFF;}
+// Перед переходом проверяем, что игра за туннелем жива: иначе Cloudflare показал бы ошибку 1033.
+function probe(u){
+  if(!u)return offline();
+  el("st").textContent="Проверяю, запущена ли игра… / Checking… / Vérification…";
+  var c=window.AbortController?new AbortController():null,t=setTimeout(function(){if(c)c.abort();},8000);
+  fetch(u.replace(/\/$/,"")+"/api/ping?t="+Date.now(),{cache:"no-store",signal:c?c.signal:undefined})
+    .then(function(r){return r.json();})
+    .then(function(j){clearTimeout(t);if(j&&j.ok)location.replace(u);else offline();})
+    .catch(function(){clearTimeout(t);offline();});
+}
 // GitHub Pages кэширует страницу, поэтому свежий адрес берём из link.json в обход кэша.
-fetch("link.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){
-  if(j.online&&j.url)return go(j.url);
-  var ln=document.getElementById("ln");if(ln)ln.hidden=true;
-  var st=document.getElementById("st");if(st)st.textContent="Игра сейчас выключена. Попробуйте позже. / The game is offline. / Le jeu est hors ligne.";
-}).catch(function(){go(URL0);});
+fetch("link.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();})
+  .then(function(j){if(j.online&&j.url)probe(j.url);else offline();})
+  .catch(function(){probe(URL0);});
 </script></body></html>
